@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: node
+  labels:
+    app: node
+spec:
+  serviceName: node
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      serviceAccountName: node
+      containers:
+        - name: node
+          image: burnt/carbon-1/node:develop
+          command:
+            - "/tini"
+            - "--"
+            - "bash"
+            - "/tmp/configmaps/start.sh"
+          ports:
+            - containerPort: 26656
+              name: p2p
+          resources:
+            requests:
+              cpu: 1024m
+              memory: 4Gi
+          volumeMounts:
+            - mountPath: /tmp/configmaps
+              name: configmaps
+            - mountPath: "/home/burntd/.burnt"
+              name: node-data
+            - mountPath: /tmp/node-keys
+              name: node-keys
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: configmaps
+          configMap:
+            name: node
+        - name: node-keys
+          secret:
+            secretName: node-keys
+  volumeClaimTemplates:
+    - metadata:
+        name: node-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: carbon-1-ebs
+        resources:
+          requests:
+            storage: 200Gi

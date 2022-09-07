@@ -1,0 +1,6 @@
+---
+namespace: carbon-1
+
+resources:
+  - namespace.yaml
+  - storageclass.yaml

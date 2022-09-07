@@ -1,0 +1,17 @@
+---
+namespace: carbon-1
+
+resources:
+  - externalsecrets.yaml
+  - secretstore.yaml
+  - service.yaml
+  - serviceaccount.yaml
+  - statefulset.yaml
+
+configMapGenerator:
+  - name: node
+    files:
+      - configmaps/app.toml
+      - configmaps/client.toml
+      - configmaps/config.toml
+      - configmaps/start.sh

@@ -1,0 +1,26 @@
+---
+version: '3.8'
+
+services:
+
+  node:
+    image: burnt/carbon-1/base-image:develop
+    volumes:
+      - ./node/data:/home/burntd/.burnt
+    platform: linux/amd64
+    command:
+      - /tini
+      - --
+      - bash
+      - /home/burntd/.burnt/config/start.sh
+    networks:
+      burnt:
+        ipv4_address: 10.1.0.2
+
+networks:
+  burnt:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.0.0/16
